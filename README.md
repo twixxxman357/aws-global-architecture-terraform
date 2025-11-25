@@ -1,6 +1,5 @@
 Armageddon Project. 
 
-Project starts Nov 26th and ends Dec 9th.  I will only accept group work. Strictly, I won’t accept individual submissions whatsoever. 
 
 Project scenario:  
 
@@ -11,9 +10,6 @@ Despite generous offers from Azure Japan for application support, AWS Japan has 
 In Stage One of this project, you are being tasked with completing the following. 
 
 1. You must have local application hosting for Japanese and foreign customers in the following locations: 
-
-
-
 
 Main App:
 
@@ -206,3 +202,4 @@ Syslog AZ must be private
         Private: 
             sn-a-california-private: 172.24.11.0/24
             sn-b-california-private: 172.24.12.0/24
+
