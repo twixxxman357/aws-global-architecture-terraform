@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=aws,github,terraform,vscode" />
+  </a>
+</p>
+
+
 AWS Armageddon Project. 
 
 
@@ -202,5 +209,6 @@ Syslog AZ must be private
         Private: 
             sn-a-california-private: 172.24.11.0/24
             sn-b-california-private: 172.24.12.0/24
+
 
 
