@@ -1,4 +1,4 @@
-Armageddon Project. 
+AWS Armageddon Project. 
 
 
 Project scenario:  
@@ -202,4 +202,5 @@ Syslog AZ must be private
         Private: 
             sn-a-california-private: 172.24.11.0/24
             sn-b-california-private: 172.24.12.0/24
+
 
