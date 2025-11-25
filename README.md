@@ -5,10 +5,7 @@
 </p>
 
 
-AWS Armageddon Project. 
-
-
-Project scenario:  
+AWS Project scenario:  
 
 Tokyo Midtown Medical Center wishes to expand its medical care for their customers located in Japan. Their main goal is to create a J-Tele-Doctor for their customers who fear actually going to the hospital with a sickness, i.e. they don’t want to spread their sickness to others and/or are located abroad. TMMC views this as an opportunity to expend their services before the next pandemic occurs.  
 
@@ -61,15 +58,6 @@ Limitations: These must be observed and respected. Failure will mean automatic p
 - AZ containing syslog data must be limited to a private subnet. 
 
  
-
-Good luck!!! 
-
- 
-
-Mookie 
-
-
-
 Notes:
 
 Customers primarily located in Japan, expand medical care for customers
@@ -209,6 +197,7 @@ Syslog AZ must be private
         Private: 
             sn-a-california-private: 172.24.11.0/24
             sn-b-california-private: 172.24.12.0/24
+
 
 
 
