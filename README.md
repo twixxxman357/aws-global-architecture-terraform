@@ -5,199 +5,188 @@
 </p>
 
 
-AWS Project scenario:  
+🏥 J-Tele-Doctor – Global AWS Architecture (Stage 1)
+Project Overview
 
-Tokyo Midtown Medical Center wishes to expand its medical care for their customers located in Japan. Their main goal is to create a J-Tele-Doctor for their customers who fear actually going to the hospital with a sickness, i.e. they don’t want to spread their sickness to others and/or are located abroad. TMMC views this as an opportunity to expend their services before the next pandemic occurs.  
+Tokyo Midtown Medical Center (TMMC) is expanding its services globally by launching J-Tele-Doctor, a telemedicine platform designed to serve Japanese customers traveling abroad while ensuring strict data residency and security requirements.
 
-Despite generous offers from Azure Japan for application support, AWS Japan has won this contract and you have been tasked as the Solution Architect. Due to the fact that many of their customers travel abroad, the application must be available abroad and must also offer local language support. 
+This project represents Stage 1 of the architecture and focuses on global application availability, regional isolation, and secure data transfer to Japan, while ensuring no personal or medical data is stored outside Japan.
 
-In Stage One of this project, you are being tasked with completing the following. 
+🌍 Regions & Global Footprint
 
-1. You must have local application hosting for Japanese and foreign customers in the following locations: 
+The application is deployed using one VPC per region, with a minimum of two Availability Zones per region, to ensure high availability and fault tolerance.
 
-Main App:
+Primary Region (Data Residency)
 
-- Tokyo
+Tokyo
 
-Customer Travel to:
+Region: ap-northeast-1
 
-- New York 
+Purpose:
 
-- London 
+Primary application hosting
 
-- Sao Paulo 
+Centralized syslog storage (Japan-only)
 
-- Australia  
+Future database & SIEM deployment (Stage 2)
 
-- Hong Kong 
+International Access Regions (Stateless App Tier Only)
 
-- California 
+Used to serve traveling customers with low latency while enforcing data residency controls.
 
+Location	AWS Region
+New York	us-east-1
+London	eu-west-2
+São Paulo	sa-east-1
+Australia	ap-southeast-2
+Hong Kong	ap-east-1
+California	us-west-1
 
+📌 Important Design Rule
 
-2. Local requirements: Each area must have the following 
+No personal or medical data is stored outside Japan
 
-- ASG with min 2 AZs 
+All international regions run stateless application tiers only
 
-- Min 1 EC2 for the current test deployment 
+🏗️ Network Architecture (Per Region)
 
-- Deployment to a security zone where syslog data can be transferred. Additionally, must demonstrate technical ability to transfer data to Japan. 
+Each region contains:
 
+1 VPC (/16 CIDR)
 
+2 Availability Zones
 
-3. Limitation to port 80 open to the public. 
+Public Subnets
 
-Limitations: These must be observed and respected. Failure will mean automatic project failure. 
+Application load-balanced entry point
 
-- Syslog data must be stored in Japan only. SIEM/Syslog server will be deployed in Stage 2 
+Only port 80 open to the public
 
-- No personal information can be stored abroad and must be limited to Japan’s borders. Additionally, this data can’t be transferred via a VPN. 
+Private Subnets
 
-- Databases will be deployed in Stage 2 
+Auto Scaling Group instances
 
-- AZ containing syslog data must be limited to a private subnet. 
+Syslog forwarding components
 
- 
-Notes:
+No direct internet access for logging resources
 
-Customers primarily located in Japan, expand medical care for customers
-Application must be available abroad as their customers like to travel abroad, must offer language support
+Each region includes:
 
-Each location must have 2 AZs
-minimum 1 EC2 for Test deployment
-security zone where data can be transfered - demonstrate ability to transfer data to Japan
-limitation to port 80 open to the public 
-Syslog data to Japan only
-No personal information can be stored abroad 
-Syslog AZ must be private 
- 
-1 VPC per region/region close to location
-    2 AZs per VPC
+Auto Scaling Group across 2 AZs
 
-    - Tokyo
-      Region: ap-northeast-1
-      AZ: ap-northeast-1a
-          ap-northeast-1d 
+Minimum 1 EC2 instance for test deployment
 
-      VPC: tokyo
-      CIDR: 172.18.0.0/16
-      Subnet:
-        Public:  
-            sn-a-tokyo-public: 172.18.1.0/24
-            sn-d-tokyo-public: 172.18.4.0/24
+Security group allowing only port 80 inbound
 
-        Private: 
-            sn-a-tokyo-private: 172.18.11.0/24
-            sn-d-tokyo-private: 172.18.14.0/24
+🔐 Security & Compliance Controls
+Data Residency
 
-            
+Syslog data is stored in Japan only
 
+No databases or personal data deployed outside ap-northeast-1
 
-    - New York 
-      Region: us-east-1
-      AZ: us-east-1a
-          us-east-1b
+No VPN-based data transfer is used
 
-      VPC: new-york
-      CIDR: 172.19.0.0/16
-      Subnet:
-        Public:  
-            sn-a-new-york-public: 172.19.1.0/24
-            sn-b-new-york-public: 172.19.2.0/24
+Logging & Audit (Stage 1)
 
-        Private: 
-            sn-a-new-york-private: 172.19.11.0/24
-            sn-b-new-york-private: 172.19.12.0/24      
+Application logs are forwarded securely to Japan
 
+Syslog components are placed in private subnets only
 
+Demonstrates cross-region data transfer without violating data locality rules
 
-    - London 
-      Region: eu-west-2
-      AZ: eu-west-2a
-          eu-west-2b
+Network Security
 
-    VPC: london
-    CIDR: 172.20.0.0/16
-    Subnet:
-        Public:  
-            sn-a-london-public: 172.20.1.0/24
-            sn-b-london-public: 172.20.2.0/24
+Public access restricted to HTTP (port 80)
 
-        Private: 
-            sn-a-london-private: 172.20.11.0/24
-            sn-b-london-private: 172.20.12.0/24
+Private subnets used for logging and internal components
 
+Clear separation between application tier and security zone
 
-    - Sao Paulo
-      Region: sa-east-1
-      AZ: sa-east-1a
-          sa-east-1c
+🌐 Why Terraform?
 
-    VPC: sao-paulo
-    CIDR: 172.21.0.0/16
-    Subnet:
-        Public:  
-            sn-a-sau-paulo-public: 172.21.1.0/24
-            sn-b-sau-paulo-public: 172.21.3.0/24
+Terraform was chosen as the Infrastructure as Code (IaC) tool for the following reasons:
 
-        Private: 
-            sn-a-sau-paulo-private: 172.21.11.0/24
-            sn-b-sau-paulo-private: 172.21.13.0/24
+Consistency across regions
+Identical architecture patterns can be deployed globally with region-specific variables.
 
+Compliance & Auditability
+Infrastructure changes are version-controlled and reviewable.
 
+Scalability
+Adding a new country or region requires configuration, not redesign.
 
+Disaster Recovery Readiness
+Infrastructure can be recreated reliably in the event of regional failure.
 
-    - Australia  
-      Region: ap-southeast-2 
-      AZ: ap-southeast-2a
-          ap-southeast-2b
+Clear Separation of Concerns
+Networking, compute, and security components are modularized.
 
-    VPC: australia
-    CIDR: 172.22.0.0/16
-    Subnet:
-        Public:  
-            sn-a-australia-public: 172.22.1.0/24
-            sn-b-australia-public: 172.22.2.0/24
+Terraform enables TMMC to treat infrastructure as policy-enforced architecture, not manual configuration.
 
-        Private: 
-            sn-a-australia-private: 172.22.11.0/24
-            sn-b-australia-private: 172.22.12.0/24
+🚀 Safe Deployment via CI/CD
 
+Infrastructure is deployed using a Terraform-based CI/CD pipeline (see terraform-devsecops-ci-cd repository).
 
-    - Hong Kong 
-      Region: ap-east-1
-      AZ: ap-east-1a
-          ap-east-1b
+Deployment Flow
 
-    VPC: hong-kong
-    CIDR: 172.23.0.0/16
-    Subnet:
-        Public:  
-            sn-a-hong-kong-public: 172.23.1.0/24
-            sn-b-hong-kong-public: 172.23.2.0/24
+Pull Request (No Changes Applied)
 
-        Private: 
-            sn-a-hong-kong-private: 172.23.11.0/24
-            sn-b-hong-kong-private: 172.23.12.0/24
+Terraform format & validation
 
+Terraform plan generation
 
-      
-    - California 
-      Region: us-west-1
-      AZ: us-west-1a
-          us-west-1b
+Security scanning (IaC)
 
-    VPC: california
-    CIDR: 172.24.0.0/16
-    Subnet:
-        Public:  
-            sn-a-california-public: 172.24.1.0/24
-            sn-b-california-public: 172.24.2.0/24
+Human review required
 
-        Private: 
-            sn-a-california-private: 172.24.11.0/24
-            sn-b-california-private: 172.24.12.0/24
+Merge to Main
 
+Automatic deployment to development environments
 
+No direct production changes
 
+Production Deployment
 
+Manual approval required
+
+Environment-gated execution
+
+Remote Terraform state with locking
+
+Key Safety Controls
+
+No terraform apply on pull requests
+
+Environment isolation per region
+
+Rollback via Git version control
+
+Secrets managed via CI/CD platform (not in code)
+
+📌 This ensures secure, auditable, and repeatable infrastructure changes — a critical requirement for healthcare systems.
+
+🧠 Architectural Intent
+
+This architecture was designed to:
+
+Serve Japanese customers globally with low latency
+
+Enforce strict data residency laws
+
+Prepare for future pandemics and demand spikes
+
+Enable controlled, automated infrastructure delivery
+
+Stage 2 will introduce:
+
+Centralized SIEM
+
+Databases in Japan only
+
+Enhanced monitoring and alerting
+
+📎 Related Projects
+
+Terraform DevSecOps CI/CD Platform
+→ terraform-devsecops-ci-cd
