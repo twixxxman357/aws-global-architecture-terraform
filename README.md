@@ -191,7 +191,5 @@ Enhanced monitoring and alerting
 Terraform DevSecOps CI/CD Platform
 → terraform-devsecops-ci-cd
 
-## Architecture Overview
 
-![J-Tele-Doctor Global AWS Architecture](j-tele-doctor-global-aws-architecture.png)
 
