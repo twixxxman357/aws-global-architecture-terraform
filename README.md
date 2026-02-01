@@ -192,6 +192,8 @@ Terraform DevSecOps CI/CD Platform
 → terraform-devsecops-ci-cd
 
 ## Architecture Overview
+Add global AWS architecture diagram
+
 
 
 
