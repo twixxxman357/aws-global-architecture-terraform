@@ -193,5 +193,6 @@ Terraform DevSecOps CI/CD Platform
 
 ## Architecture Overview
 
-![J-Tele-Doctor Global AWS Architecture](images/j-tele-doctor-global-aws-architecture.png)
+
+
 
