@@ -5,195 +5,114 @@
 </p>
 
 
-🏥 J-Tele-Doctor – Global AWS Architecture (Stage 1)
-Project Overview
+🏥 J-Tele-Doctor — Global AWS Architecture (Terraform)
+Overview
 
-Tokyo Midtown Medical Center (TMMC) is expanding its services globally by launching J-Tele-Doctor, a telemedicine platform designed to serve Japanese customers traveling abroad while ensuring strict data residency and security requirements.
+J-Tele-Doctor is a multi-region AWS architecture designed for a Japanese healthcare provider to deliver telemedicine services globally while enforcing strict Japan-centric data residency and compliance.
 
-This project represents Stage 1 of the architecture and focuses on global application availability, regional isolation, and secure data transfer to Japan, while ensuring no personal or medical data is stored outside Japan.
+The platform provides low-latency access for traveling patients while ensuring that all sensitive and stateful services remain in Japan.
 
-🌍 Regions & Global Footprint
+🎯 Key Design Goals
 
-The application is deployed using one VPC per region, with a minimum of two Availability Zones per region, to ensure high availability and fault tolerance.
+Global application availability with low latency
 
-Primary Region (Data Residency)
+Japan-only storage of personal and medical data
 
-Tokyo
+Stateless application tiers outside Japan
 
-Region: ap-northeast-1
+Controlled cross-region communication
 
-Purpose:
+Infrastructure delivered using Terraform and CI/CD
 
-Primary application hosting
+🌍 Regions
+Primary Region
 
-Centralized syslog storage (Japan-only)
+Tokyo (ap-northeast-1)
 
-Future database & SIEM deployment (Stage 2)
+Central logging
 
-International Access Regions (Stateless App Tier Only)
+Databases (Stage 2)
 
-Used to serve traveling customers with low latency while enforcing data residency controls.
+SIEM and security tooling
 
-Location	AWS Region
-New York	us-east-1
-London	eu-west-2
-São Paulo	sa-east-1
-Australia	ap-southeast-2
-Hong Kong	ap-east-1
-California	us-west-1
+Transit Gateway hub
 
-📌 Important Design Rule
+International Application Regions (Stateless Only)
+
+New York (us-east-1)
+
+London (eu-west-2)
+
+São Paulo (sa-east-1)
+
+Australia (ap-southeast-2)
+
+Hong Kong (ap-east-1)
+
+California (us-west-1)
+
+🏗️ Architecture Summary
+
+One VPC per region (/16)
+
+Minimum two Availability Zones per region
+
+Public ALB (port 80 only)
+
+Private Auto Scaling Groups (min 1 EC2 for test)
+
+No public access to compute resources
+
+🔁 Traffic Flow (High Level)
+Users → Public Internet → Regional ALB → Private App Tier
+
+
+Applications are stateless in all international regions
+
+Logs are forwarded securely to Japan
 
 No personal or medical data is stored outside Japan
 
-All international regions run stateless application tiers only
+🌐 Transit Gateway (Stage 2)
 
-🏗️ Network Architecture (Per Region)
+Each region has its own Transit Gateway
 
-Each region contains:
+Inter-region TGW peering with Tokyo as the hub
 
-1 VPC (/16 CIDR)
+TGW route tables allow operational logs only
 
-2 Availability Zones
+Databases and sensitive data are never accessible outside Japan
 
-Public Subnets
+🛡️ Compliance Boundary
 
-Application load-balanced entry point
+Syslog and security data stored in Japan only
 
-Only port 80 open to the public
+Databases deployed in Japan only
 
-Private Subnets
+No personal or medical data stored abroad
 
-Auto Scaling Group instances
+Route-restricted inter-region connectivity
 
-Syslog forwarding components
+No VPN-based data transfer
 
-No direct internet access for logging resources
+⚙️ Infrastructure as Code & CI/CD
 
-Each region includes:
+Terraform used for all infrastructure
 
-Auto Scaling Group across 2 AZs
+Multi-region consistency and auditability
 
-Minimum 1 EC2 instance for test deployment
+CI/CD pipelines enforce:
 
-Security group allowing only port 80 inbound
+Validation and security checks
 
-🔐 Security & Compliance Controls
-Data Residency
+Controlled applies
 
-Syslog data is stored in Japan only
-
-No databases or personal data deployed outside ap-northeast-1
-
-No VPN-based data transfer is used
-
-Logging & Audit (Stage 1)
-
-Application logs are forwarded securely to Japan
-
-Syslog components are placed in private subnets only
-
-Demonstrates cross-region data transfer without violating data locality rules
-
-Network Security
-
-Public access restricted to HTTP (port 80)
-
-Private subnets used for logging and internal components
-
-Clear separation between application tier and security zone
-
-🌐 Why Terraform?
-
-Terraform was chosen as the Infrastructure as Code (IaC) tool for the following reasons:
-
-Consistency across regions
-Identical architecture patterns can be deployed globally with region-specific variables.
-
-Compliance & Auditability
-Infrastructure changes are version-controlled and reviewable.
-
-Scalability
-Adding a new country or region requires configuration, not redesign.
-
-Disaster Recovery Readiness
-Infrastructure can be recreated reliably in the event of regional failure.
-
-Clear Separation of Concerns
-Networking, compute, and security components are modularized.
-
-Terraform enables TMMC to treat infrastructure as policy-enforced architecture, not manual configuration.
-
-🚀 Safe Deployment via CI/CD
-
-Infrastructure is deployed using a Terraform-based CI/CD pipeline (see terraform-devsecops-ci-cd repository).
-
-Deployment Flow
-
-Pull Request (No Changes Applied)
-
-Terraform format & validation
-
-Terraform plan generation
-
-Security scanning (IaC)
-
-Human review required
-
-Merge to Main
-
-Automatic deployment to development environments
-
-No direct production changes
-
-Production Deployment
-
-Manual approval required
-
-Environment-gated execution
-
-Remote Terraform state with locking
-
-Key Safety Controls
-
-No terraform apply on pull requests
-
-Environment isolation per region
-
-Rollback via Git version control
-
-Secrets managed via CI/CD platform (not in code)
-
-📌 This ensures secure, auditable, and repeatable infrastructure changes — a critical requirement for healthcare systems.
-
-🧠 Architectural Intent
-
-This architecture was designed to:
-
-Serve Japanese customers globally with low latency
-
-Enforce strict data residency laws
-
-Prepare for future pandemics and demand spikes
-
-Enable controlled, automated infrastructure delivery
-
-Stage 2 will introduce:
-
-Centralized SIEM
-
-Databases in Japan only
-
-Enhanced monitoring and alerting
-
-📎 Related Projects
-
-Terraform DevSecOps CI/CD Platform
-→ terraform-devsecops-ci-cd
+Safe rollback via version control
 
 ## Architecture Overview
 
 ![J-Tele-Doctor Global AWS Architecture](./j-tele-doctor-global-aws-architecture.png)
+
 
 
 
