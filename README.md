@@ -113,9 +113,10 @@ Safe rollback via version control
 
 ![J-Tele-Doctor Global AWS Architecture](./j-tele-doctor-global-aws-architecture.png)
 
-## Architecture Overview
+## Architecture Overview Stage 2 TRANSIT GATEWAY VPC PEERING
 
 ![J-Tele-Doctor Global AWS Architecture](./j-tele-doctor-global-aws-architecture2.drawio.png)
+
 
 
 
