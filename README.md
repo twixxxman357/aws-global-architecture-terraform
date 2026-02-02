@@ -115,7 +115,8 @@ Safe rollback via version control
 
 ## Architecture Overview
 
-![J-Tele-Doctor Global AWS Architecture](./j-tele-doctor-global-aws-architecture.png)
+![J-Tele-Doctor Global AWS Architecture](./j-tele-doctor-global-aws-architecture2.drawio.png
+
 
 
 
